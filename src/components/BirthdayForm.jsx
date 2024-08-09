@@ -12,12 +12,10 @@ const BirthdayForm = ({ setInfo }) => {
   const [formIsValid, setFormIsValid] = useState(true);
 
   useEffect(() => {
-    const birthday = new Date(`${month}/${day}/${year}`);
-
     // Validate day
     if (!day) setDayError("This field is required");
     else if (day < 1 || day > 31) setDayError("Must be a valid day");
-    else if (birthday.getDate() !== day) setDayError(`Must be a valid date`);
+    // else if (birthday.getDate() !== day) setDayError("Must be a valid date");
     else setDayError("");
 
     // Validate month
@@ -36,21 +34,31 @@ const BirthdayForm = ({ setInfo }) => {
   }, [dayError, monthError, yearError]);
 
   const getInfo = () => {
-    const birthday = new Date(`${month}/${day}/${year}`);
-    const diff = today.getTime() - birthday.getTime();
-    const birthdayMonth = birthday.getMonth();
-    const todayMonth = today.getMonth();
-    const passDay = birthday.getDate() > today.getDate();
+    const birthDate = new Date(`${month}/${day}/${year}`);
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    let days = today.getDate() - birthDate.getDate();
 
-    const diffDays = Math.floor(diff / 1000 / 60 / 60 / 24);
+    // Adjust for negative months or days
+    if (months < 0 || (months === 0 && days < 0)) {
+      years--;
+      months += 12;
+    }
 
-    var diffYears = today.getFullYear() - birthday.getFullYear();
-    var diffMonths =
-      diffYears * 12 - birthdayMonth + todayMonth - (passDay ? 1 : 0);
-    if (birthdayMonth > todayMonth || (birthdayMonth === todayMonth && passDay))
-      diffYears -= 1;
+    // Adjust for negative days
+    if (days < 0) {
+      months--;
+      const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+      days += lastMonth.getDate();
+    }
 
-    setInfo(diffDays, diffMonths, diffYears);
+    // Adjust if months became negative after day adjustment
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    setInfo(days, months, years);
   };
 
   return (
@@ -106,7 +114,12 @@ const BirthdayForm = ({ setInfo }) => {
 
       <div className="separator">
         <span className="line"></span>
-        <button className="btn" onClick={getInfo} disabled={!formIsValid}>
+        <button
+          className="btn"
+          onClick={getInfo}
+          disabled={!formIsValid}
+          onKeyDown={(e) => e.key === "Enter" && getInfo()}
+        >
           <img src={img} alt="button" />
         </button>
       </div>
