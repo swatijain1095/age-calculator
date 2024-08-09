@@ -1,5 +1,11 @@
+import BirthdayForm from "./components/BirthdayForm";
+
 function App() {
-  return <div className="App">App</div>;
+  return (
+    <>
+      <BirthdayForm />
+    </>
+  );
 }
 
 export default App;
