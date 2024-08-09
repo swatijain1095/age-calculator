@@ -12,21 +12,65 @@ const BirthdayForm = ({ setInfo }) => {
   const [formIsValid, setFormIsValid] = useState(true);
 
   useEffect(() => {
+    // Clear previous errors
+    setDayError("");
+    setMonthError("");
+    setYearError("");
     // Validate day
-    if (!day) setDayError("This field is required");
-    else if (day < 1 || day > 31) setDayError("Must be a valid day");
-    // else if (birthday.getDate() !== day) setDayError("Must be a valid date");
-    else setDayError("");
+    if (!day) {
+      setDayError("This field is required");
+    } else if (day < 1 || day > 31) {
+      setDayError("Must be a valid day");
+    }
 
     // Validate month
-    if (!month) setMonthError("This field is required");
-    else if (month < 1 || month > 12) setMonthError("Must be a valid month");
-    else setMonthError("");
+    if (!month) {
+      setMonthError("This field is required");
+    } else if (month < 1 || month > 12) {
+      setMonthError("Must be a valid month");
+    }
 
     // Validate year
-    if (!year) setYearError("This field is required");
-    else if (year > today.getFullYear()) setYearError("Must be in the past");
-    else setYearError("");
+    if (!year) {
+      setYearError("This field is required");
+    } else if (year > today.getFullYear()) {
+      setYearError("Must be in the past");
+    }
+
+    // Validate if the combination of day, month, and year forms a valid date
+    if (!dayError && !monthError && !yearError) {
+      const isValidDate = (day, month, year) => {
+        // Check for leap year
+        const isLeapYear = (year) => {
+          return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+        };
+
+        if (month === 2) {
+          // February
+          if (isLeapYear(year)) {
+            if (day > 29) return false;
+          } else {
+            if (day > 28) return false;
+          }
+        } else if ([4, 6, 9, 11].includes(month)) {
+          // April, June, September, November
+          if (day > 30) return false;
+        }
+
+        // Create a date object with the given year, month, and day
+        const testDate = new Date(year, month - 1, day); // month is zero-based
+        // Check if the date object matches the input
+        return (
+          testDate.getFullYear() === year &&
+          testDate.getMonth() === month - 1 && // getMonth() is zero-based
+          testDate.getDate() === day
+        );
+      };
+
+      if (!isValidDate(day, month, year)) {
+        setDayError("Must be a valid date");
+      }
+    }
   }, [day, month, year]);
 
   useEffect(() => {
