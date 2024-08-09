@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import img from "../assets/images/icon-arrow.svg";
 
 const BirthdayForm = ({ setInfo }) => {
   const today = new Date();
@@ -105,11 +106,9 @@ const BirthdayForm = ({ setInfo }) => {
 
       <div className="separator">
         <span className="line"></span>
-        <button
-          className="btn"
-          onClick={getInfo}
-          disabled={!formIsValid}
-        ></button>
+        <button className="btn" onClick={getInfo} disabled={!formIsValid}>
+          <img src={img} alt="button" />
+        </button>
       </div>
     </>
   );
