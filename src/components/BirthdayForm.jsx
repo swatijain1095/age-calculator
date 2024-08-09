@@ -16,7 +16,7 @@ const BirthdayForm = ({ setInfo }) => {
     // Validate day
     if (!day) setDayError("This field is required");
     else if (day < 1 || day > 31) setDayError("Must be a valid day");
-    else if (birthday.getDate() != day) setDayError(`Must be a valid date`);
+    else if (birthday.getDate() !== day) setDayError(`Must be a valid date`);
     else setDayError("");
 
     // Validate month
